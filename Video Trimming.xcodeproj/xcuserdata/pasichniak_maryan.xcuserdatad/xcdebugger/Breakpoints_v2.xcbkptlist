@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.ExceptionBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            scope = "0"
+            stopOnStyle = "0">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.SwiftErrorBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Video Trimming/ViewController.swift"
+            timestampString = "528643835.167021"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "101"
+            endingLineNumber = "101"
+            landmarkName = "trimVideo(sourceURL:destinationURL:trimPoints:completion:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Video_Trimming.ViewController.trimVideo(sourceURL: Foundation.URL, destinationURL: Foundation.URL, trimPoints: Swift.Array&lt;(__C.CMTime, __C.CMTime)&gt;, completion: Swift.Optional&lt;(Swift.Optional&lt;__ObjC.NSError&gt;) -&gt; ()&gt;) -&gt; ()"
+                  moduleName = "Video Trimming"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pasichniak_maryan/Desktop/Video%20Trimming/Video%20Trimming/ViewController.swift"
+                  timestampString = "528642520.226765"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "101"
+                  endingLineNumber = "101"
+                  offsetFromSymbolStart = "3524">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in Video_Trimming.ViewController.trimVideo(sourceURL: Foundation.URL, destinationURL: Foundation.URL, trimPoints: Swift.Array&lt;(__C.CMTime, __C.CMTime)&gt;, completion: Swift.Optional&lt;(Swift.Optional&lt;__ObjC.NSError&gt;) -&gt; ()&gt;) -&gt; ()"
+                  moduleName = "Video Trimming"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pasichniak_maryan/Desktop/Video%20Trimming/Video%20Trimming/ViewController.swift"
+                  timestampString = "528642520.22814"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "102"
+                  endingLineNumber = "102"
+                  offsetFromSymbolStart = "28">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Video Trimming/ViewController.swift"
+            timestampString = "528643835.167797"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "132"
+            endingLineNumber = "132"
+            landmarkName = "doneAction(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
