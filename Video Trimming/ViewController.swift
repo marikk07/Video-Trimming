@@ -54,53 +54,35 @@ class ViewController: UIViewController {
     
     func trimVideo(sourceURL: URL, destinationURL: URL, trimPoints: TrimPoints, completion: TrimCompletion?) {
         
-        guard sourceURL.isFileURL else { return }
-        guard destinationURL.isFileURL else { return }
+        let asset =  AVURLAsset.init(url: sourceURL)
+        let exportSession = AVAssetExportSession.init(asset: asset, presetName: AVAssetExportPreset640x480)
+        exportSession?.outputURL = destinationURL
+        exportSession?.shouldOptimizeForNetworkUse = true
+        exportSession?.outputFileType = AVFileType.mov
+        exportSession?.timeRange = CMTimeRangeMake(startTime!, endTime!)
+        exportSession?.exportAsynchronously(completionHandler: {
+            if exportSession?.status == .completed {
+                DispatchQueue.main.async {
+                   let urlData = NSData.init(contentsOf: destinationURL)
+                    do {
+                   try urlData?.write(to: destinationURL, options: .atomic)
+                    } catch {
+                      print (error.localizedDescription)
+                    }
+                    print(exportSession?.error?.localizedDescription)
+                    self.originalURL = destinationURL
+                    self.playVideo()
+                    
+                }
+            } else {
+                print(exportSession?.error?.localizedDescription)
+            }
+        })
         
-        let options = [
-            AVURLAssetPreferPreciseDurationAndTimingKey: true
-        ]
         
-        let asset = AVURLAsset(url: sourceURL as URL, options: options)
-        let preferredPreset = AVAssetExportPresetPassthrough
         
-            
-            let composition = AVMutableComposition()
-        let videoCompTrack = composition.addMutableTrack(withMediaType: kUTTypeMovie as AVMediaType, preferredTrackID: CMPersistentTrackID())
-        let audioCompTrack = composition.addMutableTrack(withMediaType: kUTTypeMovie as AVMediaType, preferredTrackID: CMPersistentTrackID())
-            
-        guard let assetVideoTrack: AVAssetTrack = asset.tracks(withMediaType: AVMediaType.video as AVMediaType).first else { return }
-        guard let assetAudioTrack: AVAssetTrack = asset.tracks(withMediaType: AVMediaType.audio as AVMediaType).first else { return }
         
 
-
-            var accumulatedTime = kCMTimeZero
-            for (startTimeForCurrentSlice, endTimeForCurrentSlice) in trimPoints {
-                let durationOfCurrentSlice = CMTimeSubtract(endTimeForCurrentSlice, startTimeForCurrentSlice)
-                let timeRangeForCurrentSlice = CMTimeRangeMake(startTimeForCurrentSlice, durationOfCurrentSlice)
-                
-                do {
-                    try videoCompTrack?.insertTimeRange(timeRangeForCurrentSlice, of: assetVideoTrack, at: accumulatedTime)
-                    try audioCompTrack?.insertTimeRange(timeRangeForCurrentSlice, of: assetAudioTrack, at: accumulatedTime)
-                    accumulatedTime = CMTimeAdd(accumulatedTime, durationOfCurrentSlice)
-                }
-                catch let compError {
-                    print("TrimVideo: error during composition: \(compError)")
-                    completion?(compError as NSError)
-                }
-            }
-            
-            guard let exportSession = AVAssetExportSession(asset: composition, presetName: preferredPreset) else { return }
-            
-            exportSession.outputURL = destinationURL as URL
-        exportSession.outputFileType = AVFileType.m4v
-            exportSession.shouldOptimizeForNetworkUse = true
-        
-            originalURL =  exportSession.outputURL
-            
-            exportSession.exportAsynchronously {
-                completion?((exportSession.error! as NSError))
-            }
 
     }
     
