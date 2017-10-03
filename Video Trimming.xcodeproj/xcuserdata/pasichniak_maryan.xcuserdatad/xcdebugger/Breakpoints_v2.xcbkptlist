@@ -24,30 +24,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Video Trimming/ViewController.swift"
-            timestampString = "528706024.289156"
+            timestampString = "528732290.90229"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "114"
-            endingLineNumber = "114">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Video Trimming/ViewController.swift"
-            timestampString = "528706024.289516"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "64"
-            endingLineNumber = "64"
-            landmarkName = "trimVideo(sourceURL:destinationURL:trimPoints:completion:)"
+            startingLineNumber = "169"
+            endingLineNumber = "169"
+            landmarkName = "doneAction(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

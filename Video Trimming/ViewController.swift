@@ -9,10 +9,15 @@
 import UIKit
 import MobileCoreServices
 import AVKit
+import ABVideoRangeSlider
+import Photos
 
 class ViewController: UIViewController {
 
     @IBOutlet weak var movieView: UIView!
+    @IBOutlet weak var videoRangeSlider: ABVideoRangeSlider!
+    
+    
     var videoPlayerVC : AVPlayerViewController?
     var originalURL: URL?
     var destinationURL: URL?
@@ -21,14 +26,36 @@ class ViewController: UIViewController {
     var startTime: CMTime?
     var endTime: CMTime?
     
+    var startTimeSec = 0.0;
+    var endTimeSec = 0.0;
+    var progressTime = 0.0;
+    var shouldUpdateProgressIndicator = true
+    var isSeeking = false
+    var timeObserver: AnyObject!
+    
     typealias TrimPoints = [(CMTime, CMTime)]
     typealias TrimCompletion = (NSError?) -> ()
     
     // MARK: - LifeCycle
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
         self.configPlayer()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        //Photos
+        let photos = PHPhotoLibrary.authorizationStatus()
+        if photos == .notDetermined {
+            PHPhotoLibrary.requestAuthorization({status in
+                if status == .authorized{
+                } else {}
+            })
+        }
+        
     }
     
     
@@ -40,12 +67,39 @@ class ViewController: UIViewController {
         videoPlayerVC?.view.frame = bounds
         videoPlayerVC?.view.autoresizingMask = .flexibleWidth
         movieView.addSubview((videoPlayerVC?.view)!)
+        
+        
+        let timeInterval: CMTime = CMTimeMakeWithSeconds(0.01, 100)
+        timeObserver = videoPlayerVC?.player?.addPeriodicTimeObserver(forInterval: timeInterval,
+                                                                      queue: DispatchQueue.main) { (elapsedTime: CMTime) -> Void in
+                                                                        self.observeTime(elapsedTime: elapsedTime) } as AnyObject!
+        
+    }
+    
+    func configSlider() {
+        videoRangeSlider.setVideoURL(videoURL: originalURL!)
+   //     self.endTimeSec = CMTimeGetSeconds((videoPlayerVC?.player?.currentItem?.duration)!)
+        videoRangeSlider.delegate = self
+
+    }
+    
+    
+    private func observeTime(elapsedTime: CMTime) {
+        let elapsedTime = CMTimeGetSeconds(elapsedTime)
+        if ((videoPlayerVC?.player?.currentTime().seconds)! > self.endTimeSec){
+            videoPlayerVC?.player?.pause()
+//            btnPlay.isEnabled = true
+//            btnPause.isEnabled = false
+        }
+        if self.shouldUpdateProgressIndicator{
+            videoRangeSlider.updateProgressIndicator(seconds: elapsedTime)
+        }
     }
     
     func playVideo() {
-        
+ 
+        self.configSlider()
         let asset = AVAsset.init(url: originalURL!)
-
         
         videoPlayerVC?.player = AVPlayer.init(url: originalURL!)
         videoPlayerVC?.player?.play()
@@ -72,18 +126,27 @@ class ViewController: UIViewController {
                     print(exportSession?.error?.localizedDescription)
                     self.originalURL = destinationURL
                     self.playVideo()
+                   self.saveToLibrary()
                     
                 }
             } else {
                 print(exportSession?.error?.localizedDescription)
             }
         })
-        
-        
-        
-        
 
-
+    }
+    
+    func saveToLibrary() {
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: self.destinationURL!)
+        }) { saved, error in
+            if saved {
+                let alertController = UIAlertController(title: "Your video was successfully saved", message: nil, preferredStyle: .alert)
+                let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                alertController.addAction(defaultAction)
+                self.present(alertController, animated: true, completion: nil)
+            }
+        }
     }
     
     
@@ -99,8 +162,8 @@ class ViewController: UIViewController {
     
     @IBAction func doneAction(_ sender: Any) {
         
-        startTime = CMTimeMake(2, 1)
-        endTime = CMTimeMake(4, 1)
+        startTime = CMTimeMake(Int64(startTimeSec), 1)
+        endTime = CMTimeMake(Int64(endTimeSec), 1)
         let trimPoints = [(startTime, endTime)]
         
         let originStr = originalURL?.absoluteString
@@ -120,7 +183,47 @@ class ViewController: UIViewController {
 }
 
 
-extension ViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension ViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate, ABVideoRangeSliderDelegate {
+    
+     // MARK: - ABVideoRangeSliderDelegate
+    func didChangeValue(videoRangeSlider: ABVideoRangeSlider, startTime: Float64, endTime: Float64) {
+        
+        self.endTimeSec = endTime
+        
+        if startTime != self.startTimeSec{
+            self.startTimeSec = startTime
+            
+            let timescale =  videoPlayerVC?.player?.currentItem?.asset.duration.timescale
+            let time = CMTimeMakeWithSeconds(self.startTimeSec, timescale!)
+            if !self.isSeeking{
+                self.isSeeking = true
+                 videoPlayerVC?.player?.seek(to: time, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero){_ in
+                    self.isSeeking = false
+                }
+            }
+        }
+        
+    }
+    
+    func indicatorDidChangePosition(videoRangeSlider: ABVideoRangeSlider, position: Float64) {
+        self.shouldUpdateProgressIndicator = false
+        
+        // Pause the player
+        videoPlayerVC?.player?.pause()
+        
+        if self.progressTime != position {
+            self.progressTime = position 
+            let timescale = videoPlayerVC?.player?.currentItem?.asset.duration.timescale
+            let time = CMTimeMakeWithSeconds(self.progressTime, timescale!)
+            if !self.isSeeking{
+                self.isSeeking = true
+                videoPlayerVC?.player?.seek(to: time, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero){_ in
+                    self.isSeeking = false
+                }
+            }
+        }
+    }
+    
     
     // MARK: - UIImagePickerControllerDelegate
     
