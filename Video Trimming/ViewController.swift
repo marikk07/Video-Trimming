@@ -13,7 +13,7 @@ import ABVideoRangeSlider
 import Photos
 
 class ViewController: UIViewController {
-
+    
     @IBOutlet weak var movieView: UIView!
     @IBOutlet weak var videoRangeSlider: ABVideoRangeSlider!
     
@@ -46,8 +46,7 @@ class ViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        //Photos
+        
         let photos = PHPhotoLibrary.authorizationStatus()
         if photos == .notDetermined {
             PHPhotoLibrary.requestAuthorization({status in
@@ -60,36 +59,35 @@ class ViewController: UIViewController {
     
     
     // MARK: - Private
-
+    
     func configPlayer() {
+        
         self.videoPlayerVC = AVPlayerViewController.init()
         let bounds = movieView.bounds
         videoPlayerVC?.view.frame = bounds
         videoPlayerVC?.view.autoresizingMask = .flexibleWidth
         movieView.addSubview((videoPlayerVC?.view)!)
         
-        
         let timeInterval: CMTime = CMTimeMakeWithSeconds(0.01, 100)
-        timeObserver = videoPlayerVC?.player?.addPeriodicTimeObserver(forInterval: timeInterval,
-                                                                      queue: DispatchQueue.main) { (elapsedTime: CMTime) -> Void in
-                                                                        self.observeTime(elapsedTime: elapsedTime) } as AnyObject!
+        timeObserver = videoPlayerVC?.player?.addPeriodicTimeObserver(forInterval: timeInterval, queue: DispatchQueue.main) {
+            (elapsedTime: CMTime) -> Void in
+            self.observeTime(elapsedTime: elapsedTime) } as AnyObject!
         
     }
     
     func configSlider() {
+        
         videoRangeSlider.setVideoURL(videoURL: originalURL!)
-   //     self.endTimeSec = CMTimeGetSeconds((videoPlayerVC?.player?.currentItem?.duration)!)
         videoRangeSlider.delegate = self
-
+        
     }
     
     
     private func observeTime(elapsedTime: CMTime) {
+        
         let elapsedTime = CMTimeGetSeconds(elapsedTime)
         if ((videoPlayerVC?.player?.currentTime().seconds)! > self.endTimeSec){
             videoPlayerVC?.player?.pause()
-//            btnPlay.isEnabled = true
-//            btnPause.isEnabled = false
         }
         if self.shouldUpdateProgressIndicator{
             videoRangeSlider.updateProgressIndicator(seconds: elapsedTime)
@@ -97,10 +95,10 @@ class ViewController: UIViewController {
     }
     
     func playVideo() {
- 
-        self.configSlider()
-        let asset = AVAsset.init(url: originalURL!)
         
+        self.configSlider()
+        shouldUpdateProgressIndicator = true
+        let asset = AVAsset.init(url: originalURL!)
         videoPlayerVC?.player = AVPlayer.init(url: originalURL!)
         videoPlayerVC?.player?.play()
     }
@@ -117,23 +115,23 @@ class ViewController: UIViewController {
         exportSession?.exportAsynchronously(completionHandler: {
             if exportSession?.status == .completed {
                 DispatchQueue.main.async {
-                   let urlData = NSData.init(contentsOf: destinationURL)
+                    let urlData = NSData.init(contentsOf: destinationURL)
                     do {
-                   try urlData?.write(to: destinationURL, options: .atomic)
+                        try urlData?.write(to: destinationURL, options: .atomic)
                     } catch {
-                      print (error.localizedDescription)
+                        print (error.localizedDescription)
                     }
                     print(exportSession?.error?.localizedDescription)
                     self.originalURL = destinationURL
                     self.playVideo()
-                   self.saveToLibrary()
+                    self.saveToLibrary()
                     
                 }
             } else {
                 print(exportSession?.error?.localizedDescription)
             }
         })
-
+        
     }
     
     func saveToLibrary() {
@@ -152,11 +150,11 @@ class ViewController: UIViewController {
     
     // MARK: - Actions
     @IBAction func addVideoAction(_ sender: Any) {
+        
         let imagePicker = UIImagePickerController.init()
         imagePicker.delegate = self
         imagePicker.sourceType = .photoLibrary
         imagePicker.mediaTypes = NSArray.init(objects: kUTTypeMovie) as! [String]
-
         self.present(imagePicker, animated: true)
     }
     
@@ -165,7 +163,6 @@ class ViewController: UIViewController {
         startTime = CMTimeMake(Int64(startTimeSec), 1)
         endTime = CMTimeMake(Int64(endTimeSec), 1)
         let trimPoints = [(startTime, endTime)]
-        
         let originStr = originalURL?.absoluteString
         let destStr = originStr?.prefix((originStr?.count)! - 8)
         destinationURL = URL.init(string: destStr! + ".MOV")
@@ -185,19 +182,17 @@ class ViewController: UIViewController {
 
 extension ViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate, ABVideoRangeSliderDelegate {
     
-     // MARK: - ABVideoRangeSliderDelegate
+    // MARK: - ABVideoRangeSliderDelegate
     func didChangeValue(videoRangeSlider: ABVideoRangeSlider, startTime: Float64, endTime: Float64) {
         
         self.endTimeSec = endTime
-        
         if startTime != self.startTimeSec{
             self.startTimeSec = startTime
-            
             let timescale =  videoPlayerVC?.player?.currentItem?.asset.duration.timescale
             let time = CMTimeMakeWithSeconds(self.startTimeSec, timescale!)
             if !self.isSeeking{
                 self.isSeeking = true
-                 videoPlayerVC?.player?.seek(to: time, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero){_ in
+                videoPlayerVC?.player?.seek(to: time, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero){_ in
                     self.isSeeking = false
                 }
             }
@@ -206,11 +201,9 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
     }
     
     func indicatorDidChangePosition(videoRangeSlider: ABVideoRangeSlider, position: Float64) {
+        
         self.shouldUpdateProgressIndicator = false
-        
-        // Pause the player
         videoPlayerVC?.player?.pause()
-        
         if self.progressTime != position {
             self.progressTime = position 
             let timescale = videoPlayerVC?.player?.currentItem?.asset.duration.timescale

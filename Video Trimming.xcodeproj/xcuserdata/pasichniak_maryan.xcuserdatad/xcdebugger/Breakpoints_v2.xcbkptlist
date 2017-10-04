@@ -28,11 +28,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Video Trimming/ViewController.swift"
-            timestampString = "528732290.90229"
+            timestampString = "528792105.694211"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "169"
-            endingLineNumber = "169"
+            startingLineNumber = "166"
+            endingLineNumber = "166"
             landmarkName = "doneAction(_:)"
             landmarkType = "7">
          </BreakpointContent>
