@@ -1,0 +1,6 @@
+framework module Pods_Video_Trimming {
+  umbrella header "Pods-Video Trimming-umbrella.h"
+
+  export *
+  module * { export * }
+}
